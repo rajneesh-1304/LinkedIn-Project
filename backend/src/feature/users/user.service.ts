@@ -5,6 +5,7 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { Account } from 'src/domain/entity/account.entity';
 import { User } from 'src/domain/entity/user.entity';
 import { adminAuth } from 'src/firebaseAdmin';
 import { DataSource } from 'typeorm';
@@ -14,7 +15,7 @@ export class UserService {
   constructor(private readonly dataSource: DataSource) { }
 
   async register(data: any) {
-    const userRepo = this.dataSource.getRepository(User);
+    const userRepo = this.dataSource.getRepository(Account);
 
     const existingUser = await userRepo.findOne({
       where: { email: data.email },
@@ -25,8 +26,13 @@ export class UserService {
     }
 
     const user = userRepo.create({
-      displayName: data.displayName,
       email: data.email,
+      firstName: data.firstName,
+      lastName: data?.lastName || undefined,
+      headline: data?.headline || undefined,
+      location: data?.location || undefined,
+      profilePicture: data?.profilePicture || undefined,
+      bio: data?.bio || undefined
     });
 
     await userRepo.save(user);
@@ -35,8 +41,8 @@ export class UserService {
       message: 'User registered successfully',
       user: {
         id: user.id,
-        displayName: user.displayName,
         email: user.email,
+        firstName: user.firstName,
       },
     };
   }
