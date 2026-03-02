@@ -1,6 +1,6 @@
 import { DataSource, DataSourceOptions } from 'typeorm';
 import * as dotenv from 'dotenv';
-import { User } from './users/user.entity';
+import { User } from './domain/entity/user.entity';
 
 dotenv.config();
 
@@ -13,7 +13,7 @@ const rawDataSourceOptions = {
   database: process.env.DB_NAME,
   synchronize: false,
   entities: [User],
-  migrations: ['dist/migrations/*.js'],
+  migrations: ['dist/infra/migrations/*.js'],
   seeds: ['dist/seeds/**/*.js'],
   logging: true,
 };

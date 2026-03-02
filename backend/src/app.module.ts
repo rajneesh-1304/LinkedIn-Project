@@ -2,7 +2,7 @@ import { Module, Controller, Get, UseGuards } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { dataSourceOptions } from './data-source';
 import { FirebaseAuthGuard } from './firebase-auth.guard';
-import { UserModule } from './users/user.module';
+import { UserModule } from './feature/users/user.module';
 
 @Controller()
 class AppController {

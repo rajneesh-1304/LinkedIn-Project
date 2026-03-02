@@ -74,14 +74,14 @@ export default function LoginForm() {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       const token = await user.getIdToken();
-      Cookies.set('token', token, { expires: 1 / 24, secure: true, sameSite: 'strict' });
 
       if (!user.email) {
         throw new Error("Google account has no email");
       }
 
       const loginData = {
-        email: user.email
+        email: user.email,
+        tokenId: token,
       }
 
       const loginResponse = await dispatch(loginThunk(loginData));
@@ -93,6 +93,7 @@ export default function LoginForm() {
       }
     } catch (error: any) {
       await signOut(auth);
+      Cookies.remove('token');
       setSnackbarMessage(error.message);
       setSnackbarOpen(true);
     }
@@ -106,10 +107,9 @@ export default function LoginForm() {
       const token = await user.getIdToken();
       Cookies.set('token', token, { expires: 1 / 24, secure: true, sameSite: 'strict' });
 
-
-
       const loginData = {
-        email: data.email
+        email: data.email,
+        tokenId: token,
       }
       const loginResponse = await dispatch(loginThunk(loginData));
 

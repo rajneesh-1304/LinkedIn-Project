@@ -4,7 +4,18 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 export const loginUser = async (loginData: any) => {
   try {
     const url = `${BASE_URL}/auth/login`
-    const res = await axios.post(url, loginData);
+    const res = await axios.post(
+      url,
+      {
+        tokenId: loginData.tokenId,
+        email: loginData.email, 
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
     return res.data;
   } catch (error) {
     console.error("Error in Reigstering User:", error);
