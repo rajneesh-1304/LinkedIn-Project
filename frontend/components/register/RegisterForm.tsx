@@ -19,13 +19,10 @@ import { useRouter } from "next/navigation";
 import { registerThunk } from "@//redux/features/users/userSlice";
 import { useAppDispatch } from "@//redux/hooks";
 import { FcGoogle } from "react-icons/fc";
-import { FaGithub } from "react-icons/fa";
-import Cookies from 'js-cookie';
 import {
   Divider,
   Typography,
 } from "@mui/material";
-import { FormHelperText, InputLabel, MenuItem, Select } from "@mui/material";
 
 
 const RegisterUserSchema = z.object({
@@ -70,6 +67,8 @@ export default function RegisterForm() {
   const handleToggleConfirmPassword = () => setShowConfirmPassword(prev => !prev);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
 
   const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
@@ -80,6 +79,10 @@ export default function RegisterForm() {
   };
 
   const handleSignIn = async () => {
+    if(googleLoading){
+      return;
+    }
+    setGoogleLoading(true);
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
@@ -89,34 +92,35 @@ export default function RegisterForm() {
       }
 
       const registerData = {
-        displayName: user.displayName,
         email: user.email,
-        // role: 'CUSTOMER'
+        firstName: user.displayName,
       };
 
-      const registerResponse = await dispatch(registerThunk(registerData));
+      await dispatch(registerThunk(registerData)).unwrap();
 
-      if (!registerThunk.fulfilled.match(registerResponse)) {
-        await signOut(auth);
-        throw new Error("Registration failed");
-      } else {
-        setSnackbarMessage("Account created successfully");
-        setSnackbarOpen(true);
-        router.push('/login')
-      }
-    } catch (error: any) {
-      const message =
-        error?.message?.includes("Email already registered") ||
-          error?.response?.data?.message?.includes("Email already registered")
-          ? "User already exists, please login"
-          : "Something went wrong";
-
-      setSnackbarMessage(message);
+      // if (!registerThunk.fulfilled.match(registerResponse)) {
+      //   await signOut(auth);
+      //   throw new Error("Registration failed");
+      // } else {
+      setSnackbarMessage("Account created successfully");
       setSnackbarOpen(true);
+      router.push('/login')
+      // }
+    } catch (error: any) {
+      await signOut(auth);
+      const message =
+
+      setSnackbarMessage(error);
+      setSnackbarOpen(true);
+    }
+    finally {
+      setGoogleLoading(false);
     }
   };
 
   const onSubmit = async (data: RegisterFormInputs) => {
+    if (loading) return;
+    setLoading(true);
     try {
       await createUserWithEmailAndPassword(auth, data.email, data.password);
       const docRef = await addDoc(collection(db, 'auth'), {
@@ -127,8 +131,8 @@ export default function RegisterForm() {
       });
 
       const dat = {
-        displayName: data.name,
         email: data.email,
+        firstName: data.name,
         // role: data.role
       }
       await dispatch(registerThunk(dat)).unwrap();
@@ -148,6 +152,9 @@ export default function RegisterForm() {
 
       setSnackbarMessage(message);
       setSnackbarOpen(true);
+    }
+    finally {
+      setLoading(false);
     }
   };
 
@@ -281,8 +288,8 @@ export default function RegisterForm() {
 
           <Button fullWidth
             variant="contained"
-            className="signin-btn" style={{ marginTop: '5px' }} type="submit">
-            Agree & Join
+            className="signin-btn" style={{ marginTop: '5px' }} type="submit" disabled={loading}>
+              {loading ? "Joining..." : "Agree & Join"}
           </Button>
         </Box>
 
@@ -294,9 +301,13 @@ export default function RegisterForm() {
           message={snackbarMessage}
         ></Snackbar>
       </form>
-      <Button fullWidth
-        variant="outlined" onClick={handleSignIn} className="signin">
+      <Button fullWidth 
+        variant="outlined" onClick={handleSignIn} className="signin" disabled={googleLoading} >
+          {googleLoading ? "Signing Up..." : (
+            <>
         <FcGoogle style={{ height: "30px", marginRight: "5px" }} />Sign Up With Google
+            </>
+          )}
       </Button>
 
       <div

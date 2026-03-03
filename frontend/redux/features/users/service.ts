@@ -29,7 +29,6 @@ export const registerUser = async (registerData: any) => {
     const res = await axios.post(url, registerData);
     return res.data;
   } catch (error) {
-    console.error("Error in Reigstering User:", error);
     throw error;
   }
 }

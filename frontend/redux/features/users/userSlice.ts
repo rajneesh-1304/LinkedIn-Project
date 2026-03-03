@@ -30,7 +30,7 @@ export const registerThunk = createAsyncThunk(
       console.log(userData)
       return await registerUser(userData);
     } catch (err: any) {
-      return rejectWithValue(err.response.data.message);
+      return rejectWithValue(err.message);
     }
   }
 );

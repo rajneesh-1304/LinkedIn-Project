@@ -1,12 +1,8 @@
 import { IsString, IsEmail, IsNotEmpty, IsIn, IsOptional } from 'class-validator';
 
-export class UsersDefinition {
-  @IsEmail()
-  @IsNotEmpty()
-  email: string;
-
+export class Profile {
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   firstName: string;
 
   @IsString()
@@ -23,13 +19,5 @@ export class UsersDefinition {
 
   @IsString()
   @IsOptional()
-  profilePicture: string;
-
-  @IsString()
-  @IsOptional()
   bio: string;
-
-  // @IsString()
-  // @IsNotEmpty()
-  // role: string;
 }

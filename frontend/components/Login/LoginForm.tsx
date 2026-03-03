@@ -52,6 +52,8 @@ export default function LoginForm() {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === "clickaway") return;
@@ -70,6 +72,10 @@ export default function LoginForm() {
   const handleTogglePassword = () => setShowPassword((prev) => !prev);
 
   const handleSignIn = async () => {
+    if(googleLoading){
+      return;
+    }
+    setGoogleLoading(true);
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
@@ -97,10 +103,15 @@ export default function LoginForm() {
       setSnackbarMessage(error.message);
       setSnackbarOpen(true);
     }
+    finally {
+      setGoogleLoading(false);
+    }
   };
 
 
   const onSubmit = async (data: LoginFormInputs) => {
+    if (loading) return;
+    setLoading(true);
     try {
       const response = await signInWithEmailAndPassword(auth, data.email, data.password);
       const user = response.user;
@@ -133,6 +144,9 @@ export default function LoginForm() {
       setSnackbarMessage(error.message);
       setSnackbarOpen(true);
     }
+    finally {
+      setLoading(false);
+    }
 
   };
 
@@ -143,11 +157,16 @@ export default function LoginForm() {
         <h1 className='register_heading'>Sign in</h1>
 
         <Button fullWidth
-          variant="outlined" onClick={handleSignIn} className="signin" sx={{ fontSize:"16px"}}>
-          <FcGoogle style={{ height: "30px", marginRight: "5px",  }} />Sign In With Google
+          variant="outlined" onClick={handleSignIn} disabled={googleLoading} className="signin" sx={{ fontSize: "16px" }}>
+          {googleLoading ? "Signing in..." : (
+            <>
+              <FcGoogle style={{ height: "30px", marginRight: "5px", }} />
+              Sign In With Google
+            </>
+          )}
         </Button>
 
-        <Typography className="terms-text" style={{fontSize:'12px', marginTop:'15px', marginBottom:"10px", textAlign:'center'}}>
+        <Typography className="terms-text" style={{ fontSize: '12px', marginTop: '15px', marginBottom: "10px", textAlign: 'center' }}>
           By clicking Continue, you agree to LinkedIn’s
           <span className="blue-link"> User Agreement</span>,
           <span className="blue-link"> Privacy Policy</span>, and
@@ -190,9 +209,9 @@ export default function LoginForm() {
           </FormControl>
 
           <Button fullWidth
-                variant="contained"
+                variant="contained" disabled={loading}
                 className="signin-btn" style={{marginTop:'5px', fontSize:"14px"}} type="submit">
-            Sign in
+            {loading ? "Signing in..." : "Sign in"}
           </Button>
         </Box>
       </form>

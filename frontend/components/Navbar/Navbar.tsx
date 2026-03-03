@@ -116,10 +116,10 @@ const router = useRouter();
               </Stack>
             ))}
             {!currentUser ? <Stack direction="row" spacing={1}>
-              <Button variant="outlined" sx={{ textTransform: "none" }}>
+              <Button variant="outlined" sx={{ textTransform: "none" }} onClick={()=>router.push('/login')}>
                 Sign in
               </Button>
-              <Button variant="contained" sx={{ textTransform: "none", backgroundColor: "#0a66c2" }}>
+              <Button variant="contained" sx={{ textTransform: "none", backgroundColor: "#0a66c2" }} onClick={()=>router.push('/register')}>
                 Join now
               </Button>
             </Stack> : <></>}

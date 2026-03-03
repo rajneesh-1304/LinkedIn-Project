@@ -5,7 +5,11 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Account } from 'src/domain/entity/account.entity';
+import { EducationDto } from 'src/domain/DTO/education';
+import { ExperienceDto } from 'src/domain/DTO/experience';
+import { Profile } from 'src/domain/DTO/profile';
+import { Education } from 'src/domain/entity/education.entity';
+import { Experience } from 'src/domain/entity/experience.entity';
 import { User } from 'src/domain/entity/user.entity';
 import { adminAuth } from 'src/firebaseAdmin';
 import { DataSource } from 'typeorm';
@@ -15,7 +19,7 @@ export class UserService {
   constructor(private readonly dataSource: DataSource) { }
 
   async register(data: any) {
-    const userRepo = this.dataSource.getRepository(Account);
+    const userRepo = this.dataSource.getRepository(User);
 
     const existingUser = await userRepo.findOne({
       where: { email: data.email },
@@ -57,13 +61,13 @@ export class UserService {
       const user = await userRepo.findOne({ where: { email } });
 
       if (!user) throw new NotFoundException('User not found');
-      if (user.isBanned) throw new ForbiddenException('User is banned, please contact admin');
+      // if (user.isBanned) throw new ForbiddenException('User is banned, please contact admin');
 
       return {
         message: 'User logged in successfully',
         user: {
           id: user.id,
-          displayName: user.displayName,
+          firstName: user.firstName,
           email: user.email,
         },
       };
@@ -87,6 +91,73 @@ export class UserService {
     };
   }
 
+
+  async updateProfile(id: string, userData: Profile, file: Express.Multer.File) {
+    const userRepo = this.dataSource.getRepository(User);
+    const imageUrls = `http://localhost:3001/uploads/${file?.filename}`;
+    await userRepo.update(
+      { id },
+      {
+        firstName: userData.firstName,
+        lastName: userData.lastName ?? null,
+        headline: userData.headline ?? null,
+        location: userData.location ?? null,
+        profilePicture: imageUrls ?? null,
+        bio: userData.bio ?? null,
+      }
+    );
+    return {
+      message: 'User updated successfully',
+    };
+  }
+
+  async addEducation(id: string, userData: EducationDto) {
+    const userRepo = this.dataSource.getRepository(User);
+    const educRepo = this.dataSource.getRepository(Education);
+    if (new Date(userData.startDate) > new Date(userData.endDate)) {
+    throw new ConflictException('Start date cannot be after end date');
+  }
+    const user = await userRepo.findOne({ where: { id } });
+
+    if (!user) throw new NotFoundException('User not found');
+    const edu = educRepo.create({
+      instituteName: userData.instituteName,
+      degreeName: userData.degreeName,
+      Grade: userData.Grade,
+      startDate: userData.startDate,
+      endDate: userData.endDate,
+      user
+    })
+    await educRepo.save(edu);
+    return {
+      message: 'Education details added successfully'
+    }
+  }
+
+  async addExperience(id: string, userData: ExperienceDto) {
+    const userRepo = this.dataSource.getRepository(User);
+    const expRepo = this.dataSource.getRepository(Experience);
+    if (new Date(userData.startDate) > new Date(userData.endDate)) {
+    throw new ConflictException('Start date cannot be after end date');
+  }
+    const user = await userRepo.findOne({ where: { id } });
+
+    if (!user) throw new NotFoundException('User not found');
+
+    const edu = expRepo.create({
+      company: userData.company,
+      position: userData.position,
+      location: userData.location,
+      startDate: userData.startDate,
+      endDate: userData.endDate,
+      user
+    })
+    await expRepo.save(edu);
+    return {
+      message: 'Experience details added successfully'
+    }
+  }
+
   async banUser(id: number) {
     const userRepo = this.dataSource.getRepository(User);
     const user = await userRepo.findOne({
@@ -97,7 +168,7 @@ export class UserService {
       throw new NotFoundException('User not found');
     }
 
-    user.isBanned = !user.isBanned;
+    // user.isBanned = !user.isBanned;
     await userRepo.save(user);
   }
 }

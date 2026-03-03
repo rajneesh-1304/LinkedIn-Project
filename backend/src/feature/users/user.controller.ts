@@ -1,20 +1,24 @@
-import { Controller, Post, Body, Res, Patch, Param, Get, Query } from '@nestjs/common';
-import { Response } from 'express'; 
+import { Controller, Post, Body, Res, Patch, Param, Get, Query, UseInterceptors, UploadedFiles, UploadedFile } from '@nestjs/common';
+import { Response } from 'express';
 import { UserService } from './user.service';
 import { LoginUserDto } from 'src/domain/DTO/login';
 import { UsersDefinition } from 'src/domain/DTO/user';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { productImageStorage } from 'src/infra/multer/multer';
+import { EducationDto } from 'src/domain/DTO/education';
+import { Profile } from 'src/domain/DTO/profile';
+import { ExperienceDto } from 'src/domain/DTO/experience';
 
 @Controller('auth')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
   @Post('login')
   async loginUser(
     @Body() loginDto: LoginUserDto,
-    @Res({ passthrough: true }) res: Response, 
+    @Res({ passthrough: true }) res: Response,
   ) {
     const user = await this.userService.login(loginDto);
-    console.log('i got hit');
 
     res.cookie('token', loginDto.tokenId, {
       httpOnly: true,
@@ -22,7 +26,6 @@ export class UserController {
       sameSite: 'lax',
       maxAge: 1000 * 60 * 60,
     });
-    console.log('cookie setted')
 
     return {
       message: 'User logged in successfully',
@@ -35,11 +38,18 @@ export class UserController {
     return this.userService.register(userData);
   }
 
-  @Patch('delete/:id')
-  deleteQuestion(
-    @Param('id') id: any,
+  @Patch('update/:id')
+  @UseInterceptors(
+    FileInterceptor('image', {
+      storage: productImageStorage,
+    }),
+  )
+  updateProfile(
+    @Param('id') id: string,
+    @Body() userData: Profile,
+    @UploadedFile() file?: Express.Multer.File,
   ) {
-    return this.userService.banUser(+id);
+    return this.userService.updateProfile(id, userData, file);
   }
 
   @Get()
@@ -47,7 +57,23 @@ export class UserController {
     @Query('page') page = 1,
     @Query('limit') limit = 10,
   ) {
-    return this.userService.getAll({page, limit});
-}
+    return this.userService.getAll({ page, limit });
+  }
+
+  @Post('education/:id')
+  addEducation(
+    @Param('id') id: string,
+    @Body() userData: EducationDto,
+  ){
+    return this.userService.addEducation(id, userData);
+  }
+
+  @Post('experience/:id')
+  addExperience(
+    @Param('id') id: string,
+    @Body() userData: ExperienceDto,
+  ){
+    return this.userService.addExperience(id, userData);
+  }
 
 }

@@ -1,30 +1,39 @@
 import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Education } from "./education.entity";
+import { Experience } from "./experience.entity";
 
 @Entity('users')
 export class User {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
 
-  @Column()
-  displayName: string;
+    @Column()
+    email: string;
 
-  @Column({ unique: true })
-  email: string;
+    @Column()
+    firstName: string;
 
-  // @Column()
-  // role: string;
+    @Column({nullable: true})
+    lastName: string;
 
-  @CreateDateColumn()
-  createdAt: Date;
+    @Column({nullable: true})
+    headline: string;
 
-  @Column({default:false})
-  isBanned: boolean;
+    @Column({nullable: true})
+    location: string;
 
-  @ManyToMany(() => User, user => user.connections)
-  @JoinTable()
-  connections: User[];
+    @Column({nullable: true})
+    profilePicture: string;
 
-  @ManyToMany(() => User, user => user.followers)
-  @JoinTable()
-  followers: User[];
+    @Column({nullable: true})
+    bio: string;
+
+    @CreateDateColumn()
+    createdAt: Date;
+
+    @OneToMany(()=> Education, (education) => education.user)
+    education:Education[];
+
+    @OneToMany(()=> Experience, (experience) => experience.user)
+    experience: Experience[];
 }
