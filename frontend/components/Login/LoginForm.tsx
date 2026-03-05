@@ -80,6 +80,7 @@ export default function LoginForm() {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       const token = await user.getIdToken();
+      console.log(token, 'this is token')
 
       if (!user.email) {
         throw new Error("Google account has no email");
@@ -116,7 +117,7 @@ export default function LoginForm() {
       const response = await signInWithEmailAndPassword(auth, data.email, data.password);
       const user = response.user;
       const token = await user.getIdToken();
-      Cookies.set('token', token, { expires: 1 / 24, secure: true, sameSite: 'strict' });
+      // Cookies.set('token', token, { expires: 1 / 24, secure: true, sameSite: 'strict' });
 
       const loginData = {
         email: data.email,

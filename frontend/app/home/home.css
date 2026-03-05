@@ -1,0 +1,6 @@
+.lmr{
+    display: flex;
+    gap: 150px;
+    justify-content: center;
+    margin-top: 10px;
+}

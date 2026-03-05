@@ -108,7 +108,7 @@ export default function RegisterForm() {
       // }
     } catch (error: any) {
       await signOut(auth);
-      const message =
+      // const message =
 
       setSnackbarMessage(error);
       setSnackbarOpen(true);

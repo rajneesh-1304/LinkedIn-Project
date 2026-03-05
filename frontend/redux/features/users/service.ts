@@ -14,7 +14,9 @@ export const loginUser = async (loginData: any) => {
         headers: {
           "Content-Type": "application/json",
         },
-      }
+        withCredentials: true,
+      },
+      
     );
     return res.data;
   } catch (error) {

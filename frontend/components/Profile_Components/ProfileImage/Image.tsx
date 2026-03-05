@@ -1,25 +1,37 @@
 'use client'
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./image.css";
-import { useAppSelector } from "@/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { Modal } from '../../Profile_Components/Modal/Modal'
+import { getProfileThunk } from "@/redux/features/profile/profileSlice";
 
 const Image = () => {
+    const dispatch = useAppDispatch();
     const [isOpen, setIsOpen] = useState(false);
-    const [isClose, setIsClose] = useState(true);
+    const profile = useAppSelector((state)=> state.profile.currentProfile);
+    const currentUser = useAppSelector((state) => state.users.currentUser);
+    const id=currentUser?.id;
 
-    const currectUser = useAppSelector((state) => state.users.currentUser);
+    useEffect(()=>{
+        if(currentUser){
+            dispatch(getProfileThunk(id));
+        }
+    },[id])
+
+
     return (
         <div className="header">
             <div className="cover-photo"></div>
 
             <div className="profile-section">
-                <div className="profile-image"></div>
+                <div className="profile-image">
+                    <img src={profile?.profilePicture} alt="" style={{objectFit: 'cover', overflow: 'hidden' }}/>
+                </div>
 
                 <div className="profile-info">
-                    <h1 className="name">{currectUser?.name}</h1>
+                    <h1 className="name">{profile?.firstName} {profile?.lastName}</h1>
                     <p className="headline">--</p>
-                    <p className="location">New York, United States</p>
+                    <p className="location">{profile?.location}</p>
 
                     <div className="buttons">
                         <button className="primary-btn">Open to</button>

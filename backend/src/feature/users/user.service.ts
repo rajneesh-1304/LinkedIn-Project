@@ -64,12 +64,12 @@ export class UserService {
       // if (user.isBanned) throw new ForbiddenException('User is banned, please contact admin');
 
       return {
-        message: 'User logged in successfully',
-        user: {
-          id: user.id,
-          firstName: user.firstName,
-          email: user.email,
-        },
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        location: user.location,
+        profilePicture: user.profilePicture,
+        email: user.email,
       };
     } catch (error) {
       throw new UnauthorizedException(error);
@@ -115,8 +115,8 @@ export class UserService {
     const userRepo = this.dataSource.getRepository(User);
     const educRepo = this.dataSource.getRepository(Education);
     if (new Date(userData.startDate) > new Date(userData.endDate)) {
-    throw new ConflictException('Start date cannot be after end date');
-  }
+      throw new ConflictException('Start date cannot be after end date');
+    }
     const user = await userRepo.findOne({ where: { id } });
 
     if (!user) throw new NotFoundException('User not found');
@@ -138,8 +138,8 @@ export class UserService {
     const userRepo = this.dataSource.getRepository(User);
     const expRepo = this.dataSource.getRepository(Experience);
     if (new Date(userData.startDate) > new Date(userData.endDate)) {
-    throw new ConflictException('Start date cannot be after end date');
-  }
+      throw new ConflictException('Start date cannot be after end date');
+    }
     const user = await userRepo.findOne({ where: { id } });
 
     if (!user) throw new NotFoundException('User not found');
@@ -171,4 +171,46 @@ export class UserService {
     // user.isBanned = !user.isBanned;
     await userRepo.save(user);
   }
+
+  async getProfile(id: string){
+    if(!id){
+      throw new NotFoundException('Id not provided');
+    }
+    const userRepo = this.dataSource.getRepository(User);
+    const user = await userRepo.findOne({ where: { id } });
+    if (!user) throw new NotFoundException('User not found');
+
+    return {
+      user
+    }
+  }
+
+  async getEducation(id: string){
+    if(!id){
+      throw new NotFoundException('Id not provided');
+    }
+    const userRepo = this.dataSource.getRepository(User);
+    const user = await userRepo.findOne({ where: { id } });
+    if (!user) throw new NotFoundException('User not found');
+    const educRepo = this.dataSource.getRepository(Education);
+    const edu = await educRepo.find({where : {user : {id}}});
+    return {
+      edu
+    }
+  }
+
+  async getExperience(id: string){
+    if(!id){
+      throw new NotFoundException('Id not provided');
+    }
+    const userRepo = this.dataSource.getRepository(User);
+    const user = await userRepo.findOne({ where: { id } });
+    if (!user) throw new NotFoundException('User not found');
+    const experienceRepo = this.dataSource.getRepository(Experience);
+    const exp = await experienceRepo.find({where : {user : {id}}});
+    return {
+      exp
+    }
+  }
+  
 }

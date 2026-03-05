@@ -14,8 +14,10 @@
     "@hookform/resolvers": "^5.2.2",
     "@mui/icons-material": "^7.3.7",
     "@mui/material": "^7.3.7",
+    "@mui/x-date-pickers": "^8.27.2",
     "@reduxjs/toolkit": "^2.11.2",
     "axios": "^1.13.5",
+    "dayjs": "^1.11.19",
     "firebase": "^12.9.0",
     "firebase-admin": "^13.7.0",
     "js-cookie": "^3.0.5",
@@ -30,6 +32,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/js-cookie": "^3.0.6",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

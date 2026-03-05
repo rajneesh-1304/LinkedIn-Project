@@ -45,7 +45,7 @@ const router = useRouter();
     <Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer}>
       <List>
         {navItems.map((item) => (
-          <ListItem button key={item.label}>
+          <ListItem component="button" key={item.label}>
             <ListItemIcon>{item.icon}</ListItemIcon>
             <ListItemText primary={item.label} />
           </ListItem>

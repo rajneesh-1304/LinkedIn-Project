@@ -115,6 +115,7 @@ const usersSlice = createSlice({
       })
       .addCase(loginThunk.fulfilled, (state, action: PayloadAction<any>) => {
         // state.loading = false;
+        console.log(action.payload, 'this is payload');
         state.currentUser = action.payload.user;
       })
       .addCase(loginThunk.rejected, (state, action) => {

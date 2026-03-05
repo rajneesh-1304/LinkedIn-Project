@@ -1,26 +1,62 @@
-import React from 'react'
+'use client';
+import React, { useEffect } from 'react'
 import './education.css';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { getEducationThunk } from '@/redux/features/profile/profileSlice';
 
 const Education = () => {
+
+  const currentUser = useAppSelector(state => state.users.currentUser);
+  const userId = currentUser?.id;
+
+  const dispatch = useAppDispatch();
+
+  const currentEducation = useAppSelector(
+    state => state.profile.currentEducation
+  );
+
+  useEffect(() => {
+    if (userId) {
+      dispatch(getEducationThunk(userId));
+    }
+  }, [userId, dispatch]);
+
   return (
     <div className="header">
       <div className="inner-header">
+
         <div className='heading'>Education</div>
 
-        <div className='box'>
-            <div className='image'><img src="https://www.ccet.ac.in/assets/ccetLogo-D99RbQYi.png" alt="" /></div>
-            <div className='college'>
-                <h1 className='college-name'>Chandigarh College of Engineering & Technology (Degree Wing), Panjab University</h1>
-                <h2 className='college-degree'>Bachelor of Engineering - BE, Computer Engineering</h2>
-                <h3 className='college-timing'>Oct 2022 – Feb 2026</h3>
-                <h3 className='college-grade'>Grade: 8</h3>
-            </div>
-        </div>
+        {currentEducation?.length > 0 && currentEducation.map((edu: any, index: number) => (
+          <div className='box' key={index}>
 
-        
-    </div>
+            <div className='image'>
+              <img
+                src="https://www.ccet.ac.in/assets/ccetLogo-D99RbQYi.png"
+                alt="college"
+              />
+            </div>
+
+            <div className='college'>
+              <h1 className='college-name'>{edu.instituteName}</h1>
+
+              <h2 className='college-degree'>{edu.degreeName}</h2>
+
+              <h3 className='college-timing'>
+                {edu.startDate} – {edu.endDate}
+              </h3>
+
+              <h3 className='college-grade'>
+                Grade: {edu.Grade}
+              </h3>
+            </div>
+
+          </div>
+        ))}
+
+      </div>
     </div>
   )
 }
 
-export default Education
+export default Education;

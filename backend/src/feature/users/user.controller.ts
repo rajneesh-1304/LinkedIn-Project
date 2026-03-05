@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Res, Patch, Param, Get, Query, UseInterceptors, UploadedFiles, UploadedFile } from '@nestjs/common';
+import { Controller, Post, Body, Res, Patch, Param, Get, Query, UseInterceptors, UploadedFiles, UploadedFile, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
 import { UserService } from './user.service';
 import { LoginUserDto } from 'src/domain/DTO/login';
@@ -8,6 +8,7 @@ import { productImageStorage } from 'src/infra/multer/multer';
 import { EducationDto } from 'src/domain/DTO/education';
 import { Profile } from 'src/domain/DTO/profile';
 import { ExperienceDto } from 'src/domain/DTO/experience';
+import { FirebaseAuthGuard } from 'src/firebase-auth.guard';
 
 @Controller('auth')
 export class UserController {
@@ -24,7 +25,7 @@ export class UserController {
       httpOnly: true,
       secure: false,
       sameSite: 'lax',
-      maxAge: 1000 * 60 * 60,
+      maxAge: 1000 * 60 * 60 * 8,
     });
 
     return {
@@ -38,6 +39,7 @@ export class UserController {
     return this.userService.register(userData);
   }
 
+  @UseGuards(FirebaseAuthGuard)
   @Patch('update/:id')
   @UseInterceptors(
     FileInterceptor('image', {
@@ -60,6 +62,7 @@ export class UserController {
     return this.userService.getAll({ page, limit });
   }
 
+  @UseGuards(FirebaseAuthGuard)
   @Post('education/:id')
   addEducation(
     @Param('id') id: string,
@@ -68,12 +71,31 @@ export class UserController {
     return this.userService.addEducation(id, userData);
   }
 
+  @UseGuards(FirebaseAuthGuard)
   @Post('experience/:id')
   addExperience(
     @Param('id') id: string,
     @Body() userData: ExperienceDto,
   ){
     return this.userService.addExperience(id, userData);
+  }
+
+  @UseGuards(FirebaseAuthGuard)
+  @Get('profile/:id')
+  getProfile(@Param('id') id: string){
+    return this.userService.getProfile(id);
+  }
+
+  @UseGuards(FirebaseAuthGuard)
+  @Get('education/:id')
+  getEducation(@Param('id') id: string){
+    return this.userService.getEducation(id);
+  }
+
+  @UseGuards(FirebaseAuthGuard)
+  @Get('experience/:id')
+  getExperience(@Param('id') id: string){
+    return this.userService.getExperience(id);
   }
 
 }
