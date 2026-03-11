@@ -1,0 +1,95 @@
+.post-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    padding: 15px;
+    margin: 0 -14px;
+}
+
+.post-header {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+}
+
+.role {
+    font-size: 12px;
+    color: gray;
+}
+
+.post-text {
+    margin: 10px 0;
+    font-size: 1.5vh;
+}
+
+.post-image {
+    width: 100%;
+    border-radius: 10px;
+    height: auto;
+}
+
+.post-stats {
+    font-size: 13px;
+    color: gray;
+    margin-top: 8px;
+}
+
+.post-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    font-size: 1.7vh;
+    font-family: sans-serif;
+}
+
+.post-actions button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.divider {
+  height: 1px;
+  background: #e0e0e0;
+  margin: 20px 0;
+}
+
+.comment-input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.comment-btn {
+  margin-top: 5px;
+  padding: 6px 12px;
+  background-color: #0a66c2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.comment-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.comments-list {
+  margin-top: 10px;
+}
+
+.comment-item {
+  padding: 5px 0;
+  border-bottom: 1px solid #eee;
+}
